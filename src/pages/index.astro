@@ -1,11 +1,31 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import CategoryNav from '../components/CategoryNav.astro';
+import BebidaCard from '../components/BebidaCard..astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Obtener todas las bebidas desde la colección de contenido
+const allBebidas = await getCollection('bebidas');
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Licores Premium">
+  <Header />
+  <CategoryNav activeCategory="all" />
+  
+  <main class="container mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-center mb-8">Nuestro Catálogo</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {allBebidas.map(bebida => (
+        <BebidaCard bebida={bebida} />
+      ))}
+    </div>
+  </main>
+  
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; {new Date().getFullYear()} Licores Premium. Todos los derechos reservados.</p>
+    </div>
+  </footer>
 </Layout>

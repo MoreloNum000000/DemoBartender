@@ -1,5 +1,11 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
 
-// https://astro.build/config
-export default defineConfig({});
+// Añadir configuración para Markdown y colecciones
+export default defineConfig({
+  integrations: [],
+  markdown: {
+    shikiConfig: {
+      theme: 'dracula'
+    }
+  }
+});

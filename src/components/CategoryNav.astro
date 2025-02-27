@@ -1,0 +1,35 @@
+---
+const categories = [
+  { id: 'cocteles', name: 'Cócteles' },
+  { id: 'licores', name: 'Licores' },
+  { id: 'vinos', name: 'Vinos' },
+  { id: 'cervezas', name: 'Cervezas' }
+];
+
+const { activeCategory = 'all' } = Astro.props;
+---
+
+<nav class="bg-gray-100 py-4">
+  <div class="container mx-auto">
+    <ul class="flex flex-wrap justify-center space-x-2 space-y-2 sm:space-y-0">
+      <li class="px-1">
+        <a 
+          href="/" 
+          class={`block px-4 py-2 rounded ${activeCategory === 'all' ? 'bg-indigo-600 text-white' : 'bg-white hover:bg-indigo-100'}`}
+        >
+          Todos
+        </a>
+      </li>
+      {categories.map(category => (
+        <li class="px-1">
+          <a 
+            href={`/categoria/${category.id}`} 
+            class={`block px-4 py-2 rounded ${activeCategory === category.id ? 'bg-indigo-600 text-white' : 'bg-white hover:bg-indigo-100'}`}
+          >
+            {category.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>

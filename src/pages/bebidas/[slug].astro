@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+
+// Generar páginas dinámicas para cada bebida
+export async function getStaticPaths() {
+  const bebidasEntries = await getCollection('bebidas');
+  return bebidasEntries.map(bebida => ({
+    params: { slug: bebida.slug },
+    props: { bebida },
+  }));
+}
+
+const { bebida } = Astro.props;
+const { Content } = await bebida.render();
+---
+
+<Layout title={`${bebida.data.nombre} - Licores Premium`}>
+  <Header />
+  
+  <div class="container mx-auto px-4 py-8">
+    <!-- Botón Regresar -->
+    <a href="javascript:history.back()" class="inline-flex items-center mb-6 text-indigo-600 hover:text-indigo-800">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      Volver
+    </a>
+    
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="md:flex">
+        <!-- Imagen de la bebida -->
+        <div class="md:w-1/2">
+          <img 
+            src={bebida.data.imagenDetalle || bebida.data.imagen} 
+            alt={bebida.data.nombre}
+            class="w-full h-full object-cover"
+          />
+        </div>
+        
+        <!-- Información principal -->
+        <div class="md:w-1/2 p-6">
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">{bebida.data.nombre}</h1>
+          <p class="text-gray-600 mb-4">Creado por: {bebida.data.inventor} ({bebida.data.fechaCreacion})</p>
+          
+          <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">Ingredientes principales:</h2>
+            <ul class="flex flex-wrap gap-2">
+              {bebida.data.ingredientesPrincipales.map(ingrediente => (
+                <li class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">
+                  {ingrediente}
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <p class="text-2xl font-bold text-indigo-700">${bebida.data.precio.toFixed(3)}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contenido completo del Markdown -->
+      <div class="p-6 prose max-w-none">
+        <Content />
+      </div>
+    </div>
+  </div>
+  
+  <footer class="bg-gray-900 text-white py-8 mt-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; {new Date().getFullYear()} Licores Premium. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+</Layout>
+
+<style is:global>
+  /* Estilos para el contenido de Markdown */
+  .prose h1 {
+    font-size: 2.25rem;
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose h2 {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: #4f46e5;
+  }
+  
+  .prose h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .prose p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+  
+  .prose ul {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose ol {
+    list-style-type: decimal;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prose li {
+    margin-bottom: 0.5rem;
+  }
+</style>

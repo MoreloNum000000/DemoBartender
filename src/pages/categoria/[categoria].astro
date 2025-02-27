@@ -1,0 +1,76 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import CategoryNav from "../../components/CategoryNav.astro";
+import BebidaCard from "../../components/BebidaCard..astro";
+
+// Definir las categorías válidas para generar páginas estáticas
+export async function getStaticPaths() {
+    const categories = ["cocteles", "licores", "vinos", "cervezas"];
+    return categories.map((categoria) => ({
+        params: { categoria },
+    }));
+}
+
+const { categoria } = Astro.params;
+
+// Obtener bebidas filtradas por categoría
+const allBebidas = await getCollection("bebidas");
+
+const bebidasFiltradas = allBebidas.filter(
+    (bebida) => bebida.data.categoria === categoria,
+);
+
+// Crea un type guard para categorias
+type CategoryKey = 'cocteles' | 'licores' | 'vinos' | 'cervezas';
+const isCategoryKey = (key: string): key is CategoryKey => 
+  ['cocteles', 'licores', 'vinos', 'cervezas'].includes(key);
+
+// Mapeo para títulos
+const categoryTitles: Record<CategoryKey, string> = {
+  'cocteles': 'Cócteles',
+  'licores': 'Licores',
+  'vinos': 'Vinos',
+  'cervezas': 'Cervezas'
+};
+// Usa una variable con valor predeterminado para evitar errores
+const currentCategory = isCategoryKey(categoria) ? categoria : 'cocteles';
+const categoryTitle = categoryTitles[currentCategory];
+---
+
+<Layout title={`${categoryTitle} - Licores Premium`}>
+    <Header />
+    <CategoryNav activeCategory={categoria} />
+
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-center mb-8">
+            {categoryTitle}
+        </h2>
+
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
+            {
+                bebidasFiltradas.length > 0 ? (
+                    bebidasFiltradas.map((bebida) => (
+                        <BebidaCard bebida={bebida} />
+                    ))
+                ) : (
+                    <p class="col-span-full text-center text-gray-500">
+                        No hay bebidas disponibles en esta categoría.
+                    </p>
+                )
+            }
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>
+                &copy; {new Date().getFullYear()} Licores Premium. Todos los derechos
+                reservados.
+            </p>
+        </div>
+    </footer>
+</Layout>
